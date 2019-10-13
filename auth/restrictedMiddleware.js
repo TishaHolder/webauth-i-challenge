@@ -15,7 +15,7 @@ function restricted (req, res, next){
 
     //if the user provided a username and password
     if(username && password){
-        userDB.findBy({ username }) //look up the username using the findBy function
+        userDB.findByUserName({ username }) //look up the username using the findByUserName function
         .first() //return the user object with the array square brackets removed
         .then(user => {
             //if a user was found and the entered password matches the stored password

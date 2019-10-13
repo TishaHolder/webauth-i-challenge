@@ -9,6 +9,7 @@ module.exports = {
     add, //register
     findByUserName, //login
     find, //after login return all the users
+    findById
 
 
 };
@@ -20,7 +21,7 @@ function add({first_name, last_name, username, password}){
     return db('users')
     .insert({first_name, last_name, username, password})
     .then ( ([id]) => {
-        return id;
+        return findById(id);
     })
 
 }
@@ -40,6 +41,15 @@ function find(){
     return db('users'); 
 
 
+}
+
+function findById(id){
+
+    return db('users')
+    .where({ 'users.id': id })
+    .first();
+
+    
 }
 
 
