@@ -44,6 +44,12 @@ userRouter.post('/api/login', (req, res) => {
     .then(user => {             
         //check that passwords match
         if(user && bcrypt.compareSync(password, user.password)){
+            //set session information
+            //our req object is going to have a sesion property 
+            //and in this object we can place any property that we want (req.session)            
+            //on successful login we place the user inside of the session
+            req.session.user = user;
+
             res.status(200).json(user);
         }
         else {
@@ -58,7 +64,7 @@ userRouter.post('/api/login', (req, res) => {
     })
 })
 
-userRouter.get('/api/users', (req, res) => {
+userRouter.get('/api/users', restricted, (req, res) => {
 
     userDB.find()
     .then(users => {
@@ -80,6 +86,22 @@ userRouter.get('/api/restricted', restricted, (req, res) => {
         res.status(500).json({ error: 'There was an error retrieving the users from the database.'})
     })
 
+})
+
+userRouter.get('/api/logout', (req, res) => {
+    if(req.session){
+        req.session.destroy(err => {
+            if(err){
+                res.json({ message: 'There was an error logging you out!'})
+            }
+            else{
+                res.status(200).json({ message: 'See you again soon....Thanks for stoppying by!'})
+            }
+        })
+    }
+    else {
+        res.status(200).json({ message: 'Your are not currently logged in!'})
+    }
 })
 
 //export router
