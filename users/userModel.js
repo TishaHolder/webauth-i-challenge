@@ -10,12 +10,9 @@ module.exports = {
     findByUserName, //login
     find, //after login return all the users
     findById
-
-
 };
 
 /*****************************************define CRUD methods********************************/
-
 function add({first_name, last_name, username, password}){
 
     return db('users')

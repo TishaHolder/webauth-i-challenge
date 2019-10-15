@@ -8,7 +8,7 @@ function restricted (req, res, next){
     //if the user successfully logged in a cookie will be saved with this user's information
     //so we no longer need to go and search for anything in the database
     //if we have a session and the user is inside there we can assume that you are already logged in
-    if(req.session && req.session.user){
+    if(req.session && req.session.username){
 
         next(); //if you find the user, go to the end point
     }       
@@ -33,7 +33,11 @@ function restricted (req, res, next){
     //so we have to read information from the headers instead
 
     //destructure username and password
-    const { username, password } = req.headers;
+    const { username, password } = req.headers;   
+
+    //verify why the professor used req.headers.authorization
+    //const password = req.headers.authorization;
+    //cont username = req.headers.authorization; 
 
     //if the user provided a username and password
     if(username && password){

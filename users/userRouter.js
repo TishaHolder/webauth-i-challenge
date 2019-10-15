@@ -19,7 +19,7 @@ userRouter.post('/api/register', (req, res) => {
     //destructure the info received from req.body
     const { first_name, last_name, username, password } = req.body;
 
-    //hash the password. 8 indicates hashing rounds
+    //hash the password. 8 indicates hashing rounds (2^8) and how we slow down attackers trying to pregenerate hashes
     //Having an algorithm that hashes the information multiple times (rounds) means an attacker needs to 
     //have the hash, know the algorithm used, and how many rounds were used to generate the hash in the first place.
     const hash = bcrypt.hashSync(password, 8);
@@ -29,7 +29,7 @@ userRouter.post('/api/register', (req, res) => {
         res.status(200).json(user);
     })
     .catch(error => {
-        console.log("reg error", error);
+        console.log("registration error", error);
         res.status(500).json({ error: 'There was a registration error.'})
     })
     
@@ -40,17 +40,25 @@ userRouter.post('/api/login', (req, res) => {
 
     const { username, password } = req.body;
 
+    //when we turn on sessions we have access to this req.session object
+    console.log("session", req.session);
+
     userDB.findByUserName({ username })    
     .then(user => {             
         //check that passwords match
         if(user && bcrypt.compareSync(password, user.password)){
             //set session information
             //our req object is going to have a sesion property 
-            //and in this object we can place any property that we want (req.session)            
-            //on successful login we place the user inside of the session
-            req.session.user = user;
+            //and in this object (req.session) we can place any property that we want            
+            //on successful login we save the username inside of the session
+            //after login the server will remember the username during the session
+            //this is basically setting a cookie on the user's browser
+            req.session.username = user.username;
 
-            res.status(200).json(user);
+            //you can add properties to req.session
+            //never use: req.session = user; as you are reassigning the session object
+
+            res.status(200).json({ message: `Welcome ${user.username}!`});
         }
         else {
             // we will return 401 if the password or username are invalid
